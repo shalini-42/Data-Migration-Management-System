@@ -1,0 +1,14 @@
+import {useState,useEffect} from 'react';
+const st=['Completed','Running','Failed','Pending','Cancelled'];
+const dbs=['PostgreSQL','MySQL','MongoDB','Oracle'];
+const projects=Array.from({length:10},(_,i)=>{const t=10000+i*3700,f=Math.round(t*(i%3==2?.08:.01)),s=st[i%5];return{id:'PRJ-'+(100+i),name:['Customer CRM','Orders Archive','Inventory Sync','HR Records','Billing Ledger'][i%5]+' '+(i+1),description:'Demo migration project',source:'Legacy '+dbs[i%4],target:'Cloud '+dbs[(i+1)%4],type:['Full','Incremental'][i%2],created:`2026-0${1+i%9}-1${i%9}`,status:s,progress:s=='Completed'?100:s=='Pending'?0:20+i*7,total:t,success:t-f,failed:f}});
+export const DEMO={projects,
+sources:[{id:'SRC-1',name:'Customers CSV',type:'CSV',file:'customers.csv',size:'48 KB',uploaded:'2026-03-02',status:'Simulated',description:'Customer export'},{id:'SRC-2',name:'Orders JSON',type:'JSON',file:'orders.json',size:'120 KB',uploaded:'2026-03-05',status:'Simulated',description:'Orders dump'}],
+targets:[{id:'TGT-1',name:'Cloud Postgres',type:'PostgreSQL',host:'db.example.local',port:'5432',database:'prod',username:'migrator',status:'Connected'},{id:'TGT-2',name:'Analytics MySQL',type:'MySQL',host:'mysql.example.local',port:'3306',database:'analytics',username:'etl',status:'Untested'},{id:'TGT-3',name:'Local SQLite',type:'SQLite',host:'localhost',port:'-',database:'app.db',username:'-',status:'Untested'},{id:'TGT-4',name:'Docs MongoDB',type:'MongoDB',host:'mongo.example.local',port:'27017',database:'docs',username:'svc',status:'Untested'},{id:'TGT-5',name:'ERP SQL Server',type:'SQL Server',host:'mssql.example.local',port:'1433',database:'erp',username:'etl',status:'Untested'}],
+errors:[{id:'ERR-1',project:'PRJ-102',severity:'Critical',message:'Foreign key violation on orders.customer_id',time:'2026-03-10 10:12',status:'Open'},{id:'ERR-2',project:'PRJ-107',severity:'High',message:'Timeout while writing batch 42',time:'2026-03-11 14:40',status:'Open'},{id:'ERR-3',project:'PRJ-104',severity:'Low',message:'Trimmed whitespace in 12 values',time:'2026-03-12 09:05',status:'Resolved'}],
+notifications:[{id:'N-1',title:'Migration completed',message:'PRJ-100 finished',time:'2026-03-12',status:'Unread'},{id:'N-2',title:'Validation warning',message:'3 duplicate rows found',time:'2026-03-13',status:'Unread'}],
+jobs:[],mappings:[],upload:null,prefs:{theme:'light',pageSize:8}};
+export function useStore(key){const k='dmms_'+key;const [v,setV]=useState(()=>{try{const s=localStorage.getItem(k);return s?JSON.parse(s):DEMO[key]}catch{return DEMO[key]}});
+useEffect(()=>{localStorage.setItem(k,JSON.stringify(v))},[v]);return [v,setV]}
+export const toast=(m,t='ok')=>window.dispatchEvent(new CustomEvent('toast',{detail:{m,t}}));
+export const clearAll=()=>Object.keys(localStorage).filter(x=>x.startsWith('dmms_')).forEach(x=>localStorage.removeItem(x));

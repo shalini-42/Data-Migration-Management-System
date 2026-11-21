@@ -1,0 +1,574 @@
+# MASTER PROJECT IMPLEMENTATION PROMPT
+## Data Migration Management System – Complete Frontend
+
+Act as a Senior React Frontend Developer, UI/UX Designer, and Software Architect.
+
+I want you to develop a complete, professional, enterprise-level **Data Migration Management System** using React.js. This is a FRONTEND-ONLY project. Do not create Django, Node.js, Python, PHP, or any backend.
+
+Your responsibility is to implement the complete working frontend with realistic demo data, interactive features, localStorage persistence, file upload, data processing, and downloadable reports.
+
+---
+
+# 1. PROJECT TECHNOLOGY
+
+Use the following technologies:
+
+- React.js
+- Vite
+- JavaScript (ES6+)
+- HTML5
+- CSS3
+- React Router DOM
+- Axios only if needed for future extensibility (do not require APIs)
+- Lucide React for icons
+- Recharts for charts
+- XLSX for Excel exports
+- jsPDF for PDF generation
+- jsPDF-AutoTable for PDF tables
+- React Toastify or custom notification system
+
+Use localStorage for saving frontend demo information.
+
+Do not use a backend or external API.
+
+# 2. DESIGN REQUIREMENTS
+
+Create a premium enterprise SaaS dashboard.
+
+Design style:
+- Professional enterprise interface.
+- Dark navy sidebar.
+- White and light-grey content area.
+- Blue primary color.
+- Subtle shadows.
+- Modern typography.
+- Consistent spacing.
+- Rounded cards.
+- Professional tables.
+- Clean charts.
+- Smooth transitions.
+- Responsive layouts.
+
+Avoid:
+- Basic or outdated dashboard designs.
+- Excessive gradients.
+- Unnecessary animations.
+- Browser alert(), confirm(), and prompt().
+- Poorly aligned elements.
+- Overcrowded pages.
+
+Use custom dialogs, confirmation modals, success messages, and error messages.
+
+# 3. APPLICATION LAYOUT
+
+Create the following layout:
+
+Sidebar:
+1. Dashboard
+2. Migration Projects
+3. Data Sources
+4. Target Databases
+5. Data Mapping
+6. Migration Jobs
+7. Data Validation
+8. Error Logs
+9. Migration History
+10. Reports & Downloads
+11. Notifications
+12. Settings
+
+Navbar:
+- Sidebar toggle
+- Breadcrumb
+- Global search
+- Notification icon with unread count
+- User profile dropdown
+- Profile option
+- Logout option
+
+# 4. DASHBOARD
+
+Create a complete dashboard with:
+
+Statistics cards:
+- Total Migration Projects
+- Successful Migrations
+- Failed Migrations
+- Running Migrations
+- Total Records Processed
+- Data Storage Transferred
+
+Charts:
+- Migration activity chart
+- Successful vs Failed migration chart
+- Weekly migration statistics
+- Migration status distribution
+
+Additional sections:
+- Recent migration projects
+- Recent activities
+- Latest errors
+- Quick action buttons
+- Migration progress overview
+
+All statistics must update based on frontend demo data.
+
+# 5. MIGRATION PROJECT MANAGEMENT
+
+Implement complete CRUD functionality.
+
+Features:
+- Create migration project.
+- Edit migration project.
+- View project details.
+- Delete project.
+- Search projects.
+- Filter by status.
+- Filter by date.
+- Sort table columns.
+- Pagination.
+
+Project fields:
+- Project ID
+- Project Name
+- Description
+- Source Database
+- Target Database
+- Migration Type
+- Created Date
+- Status
+- Progress Percentage
+- Total Records
+- Successful Records
+- Failed Records
+
+Use custom create/edit/view/delete dialogs.
+
+# 6. DATA SOURCES
+
+Create a Data Sources page.
+
+Features:
+- Add data source.
+- Edit data source.
+- Delete data source.
+- View data source details.
+- Upload CSV files.
+- Upload JSON files.
+- Upload Excel files.
+- Preview uploaded data.
+- Search and filter data sources.
+
+Data source fields:
+- Source Name
+- Source Type
+- File Name
+- File Size
+- Upload Date
+- Connection Status
+- Description
+
+Since this is frontend only, simulate database connections. Never claim a real database connection exists.
+
+# 7. TARGET DATABASES
+
+Create a Target Databases page.
+
+Features:
+- Add destination configuration.
+- Edit destination.
+- Delete destination.
+- View configuration.
+- Simulate connection testing.
+- Search and filter destinations.
+
+Fields:
+- Target Name
+- Database Type
+- Host
+- Port
+- Database Name
+- Username
+- Connection Status
+
+Do not store actual passwords or sensitive credentials. Use mock configuration information only.
+
+# 8. DATA MAPPING
+
+Create an interactive Data Mapping page.
+
+Features:
+- Select source data.
+- Select destination.
+- Display source columns.
+- Display target columns.
+- Map source columns to target columns.
+- Change mappings.
+- Remove mappings.
+- Add custom mappings.
+- Preview mapped data.
+- Save mappings in localStorage.
+- Validate mapping completeness.
+
+Example:
+
+Source:
+- customer_name
+- customer_email
+- customer_phone
+
+Target:
+- name
+- email
+- phone
+
+Allow the user to map these fields visually.
+
+# 9. MIGRATION JOBS
+
+Create a Migration Jobs page.
+
+Features:
+- Create migration job.
+- Select project.
+- Select source.
+- Select target.
+- Select mapping.
+- Start migration simulation.
+- Pause migration simulation.
+- Resume migration simulation.
+- Cancel migration simulation.
+- Show real-time simulated progress.
+- Display processed records.
+- Display successful records.
+- Display failed records.
+- Show migration status.
+
+Migration statuses:
+- Pending
+- Running
+- Paused
+- Completed
+- Failed
+- Cancelled
+
+Implement the simulation using frontend JavaScript only.
+
+Use React state and proper cleanup for timers.
+
+# 10. DATA VALIDATION
+
+Create a Data Validation page.
+
+Features:
+- Validate uploaded CSV, JSON, and Excel data.
+- Check empty fields.
+- Check duplicate records.
+- Check invalid email formats.
+- Check missing required columns.
+- Display validation summary.
+- Display valid records.
+- Display invalid records.
+- Export validation results.
+
+Show validation status:
+- Valid
+- Invalid
+- Warning
+
+# 11. ERROR LOGS
+
+Create a complete Error Logs page.
+
+Features:
+- Display migration errors.
+- Search errors.
+- Filter by severity.
+- Filter by project.
+- View full error details.
+- Mark errors as resolved.
+- Delete error logs.
+- Export error logs.
+
+Severity:
+- Critical
+- High
+- Medium
+- Low
+
+# 12. MIGRATION HISTORY
+
+Create a Migration History page.
+
+Features:
+- Show completed migrations.
+- Show failed migrations.
+- Show cancelled migrations.
+- Search migration history.
+- Filter by status.
+- Filter by date.
+- View migration details.
+- Download individual migration reports.
+
+# 13. REPORTS AND DOWNLOADS
+
+This is a very important module.
+
+Implement working browser-side download functionality.
+
+Supported formats:
+- PDF
+- Excel XLSX
+- CSV
+- JSON
+
+Download options:
+1. Complete migration report.
+2. Individual project report.
+3. Migration history report.
+4. Data validation report.
+5. Error log report.
+6. Source data export.
+7. Target data export.
+8. Dashboard statistics report.
+
+PDF report should include:
+- Application name.
+- Report title.
+- Project details.
+- Source and target information.
+- Migration date.
+- Total records.
+- Successful records.
+- Failed records.
+- Success percentage.
+- Error summary.
+- Report generation date.
+
+Excel report:
+- Use separate sheets where appropriate.
+- Include project summary.
+- Include migration records.
+- Include validation results.
+- Include error logs.
+
+CSV:
+- Export actual displayed records.
+
+JSON:
+- Export structured migration information.
+
+Add download buttons with clear labels and icons.
+
+Show custom success messages after successful downloads.
+
+All exports must contain actual current frontend data, not hardcoded placeholder reports.
+
+# 14. NOTIFICATIONS
+
+Create a Notifications page.
+
+Features:
+- Migration started notification.
+- Migration completed notification.
+- Migration failed notification.
+- Validation warning notification.
+- File uploaded notification.
+- Mark as read.
+- Mark all as read.
+- Delete notification.
+- Unread count in navbar.
+
+Use localStorage to persist notifications.
+
+# 15. SETTINGS
+
+Create a Settings page.
+
+Sections:
+- Application information.
+- User profile.
+- Theme settings.
+- Notification preferences.
+- Data display preferences.
+- Clear demo data.
+
+Add custom confirmation dialogs.
+
+# 16. FILE UPLOAD AND PROCESSING
+
+Implement real client-side file reading.
+
+Supported:
+- CSV
+- JSON
+- XLSX
+- XLS
+
+Use appropriate browser-side libraries.
+
+Features:
+- Drag and drop.
+- File selection.
+- File size validation.
+- File type validation.
+- Upload progress simulation.
+- Preview uploaded records.
+- Display columns and rows.
+- Download original uploaded file where possible.
+
+Do not send uploaded data to any server.
+
+# 17. GLOBAL FUNCTIONALITY
+
+Every page must be functional.
+
+Implement:
+- CRUD operations.
+- Search.
+- Filtering.
+- Sorting.
+- Pagination.
+- Form validation.
+- Dialogs.
+- Toast messages.
+- Loading indicators.
+- Empty states.
+- Error states.
+- Responsive sidebar.
+- Responsive tables.
+- localStorage persistence.
+
+Use reusable components wherever possible.
+
+# 18. SUGGESTED PROJECT STRUCTURE
+
+data-migration-frontend/
+│
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── common/
+│   │   ├── modals/
+│   │   ├── tables/
+│   │   ├── charts/
+│   │   └── forms/
+│   ├── layout/
+│   │   ├── AdminLayout.jsx
+│   │   ├── Sidebar.jsx
+│   │   └── Navbar.jsx
+│   ├── pages/
+│   │   ├── Dashboard.jsx
+│   │   ├── MigrationProjects.jsx
+│   │   ├── DataSources.jsx
+│   │   ├── TargetDatabases.jsx
+│   │   ├── DataMapping.jsx
+│   │   ├── MigrationJobs.jsx
+│   │   ├── DataValidation.jsx
+│   │   ├── ErrorLogs.jsx
+│   │   ├── MigrationHistory.jsx
+│   │   ├── Reports.jsx
+│   │   ├── Notifications.jsx
+│   │   └── Settings.jsx
+│   ├── services/
+│   │   ├── storage.js
+│   │   ├── fileService.js
+│   │   ├── exportService.js
+│   │   ├── migrationService.js
+│   │   └── validationService.js
+│   ├── hooks/
+│   ├── context/
+│   ├── data/
+│   │   └── demoData.js
+│   ├── styles/
+│   │   ├── global.css
+│   │   ├── layout.css
+│   │   └── components.css
+│   ├── App.jsx
+│   └── main.jsx
+│
+├── index.html
+└── package.json
+
+# 19. CODE QUALITY REQUIREMENTS
+
+- Use clean and reusable React components.
+- Use functional components and hooks.
+- Avoid unnecessary code duplication.
+- Keep CSS organized.
+- Avoid inline styling except for dynamic values.
+- Use consistent naming conventions.
+- Add proper error handling.
+- Avoid console errors.
+- Ensure all routes work.
+- Ensure all buttons have actual functionality.
+- Ensure all forms validate input.
+- Ensure data persists after refresh.
+- Ensure download functionality works.
+- Do not leave unfinished pages.
+- Do not use fake buttons that do nothing.
+
+# 20. FINAL TESTING
+
+Before completing the project, verify:
+
+1. Application starts successfully.
+2. Every route opens correctly.
+3. Sidebar navigation works.
+4. Navbar works.
+5. All CRUD operations work.
+6. File uploads work.
+7. CSV parsing works.
+8. Excel parsing works.
+9. JSON parsing works.
+10. Data mapping works.
+11. Migration simulation works.
+12. Validation works.
+13. Search and filters work.
+14. Notifications work.
+15. localStorage persistence works.
+16. PDF downloads work.
+17. Excel downloads work.
+18. CSV downloads work.
+19. JSON downloads work.
+20. Responsive layout works.
+
+# 21. IMPLEMENTATION INSTRUCTIONS
+
+Important:
+
+I want you to implement the actual complete project, not just provide an explanation, design suggestions, or sample code.
+
+First inspect the current project directory if one already exists.
+
+If the project is empty, create the complete Vite React project.
+
+Install the required dependencies.
+
+Implement all pages, components, CSS, services, and routing.
+
+Do not generate everything as one giant JSX file.
+
+Work module by module while maintaining a consistent architecture.
+
+Do not stop after creating the dashboard.
+
+Do not skip any module.
+
+Do not replace requested functionality with static UI.
+
+Use realistic sample data so the application looks complete immediately after starting.
+
+If the output is too large for one response, continue in multiple implementation stages until every module is complete.
+
+At the end:
+- Run the application.
+- Fix compilation errors.
+- Fix missing imports.
+- Fix broken routes.
+- Verify the main workflows.
+- Provide the complete list of implemented features.
+- Provide the exact commands to start the application.
+
+**FINAL EXPECTATION: A complete, professional, responsive, frontend-only Data Migration Management System with functional file uploads, migration simulations, data validation, CRUD management, and downloadable PDF, Excel, CSV, and JSON reports.**
