@@ -1,11 +1,12 @@
 import {useState,useEffect} from 'react';import {NavLink,Routes,Route,useLocation,useNavigate} from 'react-router-dom';
-import {X,LayoutDashboard,FolderKanban,Database,Server,GitCompare,Play,ShieldCheck,AlertTriangle,History,FileText,Bell,Settings as Cog,Menu,Search,LogOut,User} from 'lucide-react';
-import Crud from './Crud.jsx';import {Dashboard,Validation,Mapping,Jobs,Reports,Settings} from './pages.jsx';import {useStore,toast} from './store.js';
+import {FileSpreadsheet,X,LayoutDashboard,FolderKanban,Database,Server,GitCompare,Play,ShieldCheck,AlertTriangle,History,FileText,Bell,Settings as Cog,Menu,Search,LogOut,User} from 'lucide-react';
+import Crud from './Crud.jsx';import Compare from './Compare.jsx';import {Dashboard,Validation,Mapping,Jobs,Reports,Settings} from './pages.jsx';import {useStore,toast} from './store.js';
 const P=['Completed','Running','Failed','Pending','Cancelled'],S=['Open','Resolved'];
 const R=[
 ['/','Dashboard',LayoutDashboard,<Dashboard/>],
 ['/projects','Migration Projects',FolderKanban,<Crud k="projects" title="Project" prefix="PRJ" rowExtra={(r,rows,set)=>[<button key="d" className="btn ghost" onClick={()=>{set(p=>[{...r,id:'PRJ-'+Date.now()%100000,name:r.name+' (copy)',status:'Pending',progress:0},...p]);toast('Project duplicated')}}>Copy</button>]} cols={['id','name','source','target','type','created','status','progress','total','success','failed']} fields={[{k:'name',req:1},{k:'description'},{k:'source',req:1},{k:'target',req:1},{k:'type',opts:['Full','Incremental']},{k:'created',type:'date'},{k:'status',opts:P},{k:'progress',type:'number'},{k:'total',type:'number'},{k:'success',type:'number'},{k:'failed',type:'number'}]}/>],
 ['/sources','Data Sources',Database,<Crud k="sources" title="Source" prefix="SRC" cols={['id','name','type','file','size','uploaded','status']} fields={[{k:'name',req:1},{k:'type',opts:['CSV','JSON','Excel']},{k:'file'},{k:'size'},{k:'uploaded',type:'date'},{k:'status',opts:['Simulated','Disconnected']},{k:'description'}]}/>],
+['/compare','Compare Files',FileSpreadsheet,<Compare/>],
 ['/targets','Target Databases',Server,<Crud k="targets" title="Target" prefix="TGT" rowExtra={(r,rows,set)=>[<button key="t" className="btn ghost" onClick={()=>{set(p=>p.map(x=>x.id==r.id?{...x,status:'Testing'}:x));setTimeout(()=>{set(p=>p.map(x=>x.id==r.id?{...x,status:'Connected'}:x));toast('Simulated connection test passed (no real connection)')},900)}}>Test</button>]} cols={['id','name','type','host','port','database','username','status']} fields={[{k:'name',req:1},{k:'type',opts:['PostgreSQL','MySQL','MongoDB','Oracle']},{k:'host',req:1},{k:'port',req:1},{k:'database',req:1},{k:'username'},{k:'status',opts:['Connected','Untested','Failed']}]}/>],
 ['/mapping','Data Mapping',GitCompare,<Mapping/>],
 ['/jobs','Migration Jobs',Play,<Jobs/>],
@@ -28,3 +29,4 @@ return <div className={'app '+pf.theme+(col?' collapsed':'')+(drawer?' drawer':'
 <div className="um"><button className="ic" onClick={()=>setUm(!um)}><User/></button>{um&&<div className="dd"><button onClick={()=>{setUm(false);nav('/settings')}}>Profile</button><button onClick={()=>{setUm(false);location.reload()}}><LogOut size={14}/> Logout</button></div>}</div></header>
 <section><h2>{cur[1]}</h2><Routes>{R.map(([p,,,el])=><Route key={p} path={p} element={el}/>)}</Routes></section></main>
 {t&&<div className={'toast '+t.t}>{t.m}</div>}</div>}
+

@@ -1,0 +1,41 @@
+﻿import {useState,useMemo} from 'react';import {Upload,X,Download} from 'lucide-react';import {toast} from './store.js';import {exportData} from './exporter.js';
+let CACHE={files:[],sel:[]};
+const CATS=['Source','Target','Reference','Backup','Comparison'],TYPES=['Added','Deleted','Modified','Unchanged','Duplicate'];
+const typ=v=>v===''||v==null?'empty':isNaN(+v)?'text':'number';
+const rowsOf=f=>f.sheets[f.sheet]||[];
+function compare(A,B,key){const ca=A[0]?Object.keys(A[0]):[],cb=B[0]?Object.keys(B[0]):[];const common=ca.filter(c=>cb.includes(c));
+if(!common.includes(key))return{error:`Key column "${key}" must exist in both files/sheets`};
+const idx=R=>{const m=new Map(),dup=[];R.forEach(r=>{const k=String(r[key]);m.has(k)?dup.push({k,r}):m.set(k,r)});return{m,dup}};const a=idx(A),b=idx(B),out=[];
+a.m.forEach((r,k)=>{const o=b.m.get(k);if(!o)return out.push({type:'Deleted',key:k,rec:r});let ch=0;common.forEach(c=>{if(String(r[c]).trim()!==String(o[c]).trim()){ch++;out.push({type:'Modified',key:k,column:c,old:r[c],new:o[c]})}});if(!ch)out.push({type:'Unchanged',key:k,rec:r})});
+b.m.forEach((r,k)=>!a.m.has(k)&&out.push({type:'Added',key:k,rec:r}));
+a.dup.forEach(d=>out.push({type:'Duplicate',key:d.k,column:'(baseline)',rec:d.r}));b.dup.forEach(d=>out.push({type:'Duplicate',key:d.k,column:'(compared)',rec:d.r}));
+const first=(R,c)=>typ((R.find(r=>r[c]!==''&&r[c]!=null)||{})[c]);
+const n=t=>t=='Modified'?new Set(out.filter(x=>x.type=='Modified').map(x=>x.key)).size:out.filter(x=>x.type==t).length;
+return{out,missing:ca.filter(c=>!cb.includes(c)),extra:cb.filter(c=>!ca.includes(c)),tdiff:common.filter(c=>first(A,c)!=first(B,c)),common,counts:{'Baseline records':A.length,'Compared records':B.length,Added:n('Added'),Deleted:n('Deleted'),Modified:n('Modified'),Unchanged:n('Unchanged'),Duplicate:n('Duplicate')}}}
+const flat=x=>x.type=='Modified'?{type:x.type,key:x.key,column:x.column,old:x.old,new:x.new}:{type:x.type,key:x.key,...x.rec};
+export default function Compare(){const [files,setF]=useState(CACHE.files);const [sel,setS]=useState(CACHE.sel);const [tab,setTab]=useState(0);const [key,setKey]=useState('');const [flt,setFlt]=useState('');const [q,setQ]=useState('');const [drag,setD]=useState(false);
+const sync=(f,s)=>{CACHE={files:f,sel:s};setF(f);setS(s)};
+const load=async list=>{let cur=[...files];for(const file of list){try{const ext=file.name.split('.').pop().toLowerCase();if(!['xlsx','xls','csv'].includes(ext))throw new Error(file.name+': unsupported type');if(file.size>25*1048576)throw new Error(file.name+': exceeds 25 MB');
+if(cur.some(f=>f.name==file.name&&f.size==file.size)){toast(file.name+' is a duplicate â€“ skipped','err');continue}
+const XLSX=await import('xlsx');const wb=XLSX.read(await file.arrayBuffer());const sheets={};wb.SheetNames.forEach(n=>sheets[n]=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''}));
+cur.push({id:Date.now()+Math.random(),name:file.name,size:file.size,cat:'Source',sheets,sheet:wb.SheetNames[0],uploaded:new Date().toLocaleString(),file});toast(file.name+' uploaded')}catch(e){toast(e.message,'err')}}sync(cur,sel)};
+const upd=(id,p)=>sync(files.map(f=>f.id==id?{...f,...p}:f),sel);
+const picked=sel.map(id=>files.find(f=>f.id==id)).filter(Boolean);
+const results=useMemo(()=>{if(picked.length<2)return[];const base=rowsOf(picked[0]);const k0=key||(base[0]?Object.keys(base[0]).find(c=>/^(id|.*_id|key|code)$/i.test(c))||Object.keys(base[0])[0]:'');return picked.slice(1).map(f=>({name:f.name,r:compare(base,rowsOf(f),k0),k:k0}))},[sel,files,key]);
+const res=results[Math.min(tab,results.length-1)];const r=res&&res.r;
+const view=r&&!r.error?r.out.filter(x=>(!flt||x.type==flt)&&JSON.stringify(x).toLowerCase().includes(q.toLowerCase())):[];
+const exp=(fmt,t)=>{const rows=(t?r.out.filter(x=>x.type==t):r.out).map(flat);if(!rows.length)return toast('No '+(t||'')+' records to export','err');exportData(fmt,'comparison-'+(t||'full').toLowerCase(),rows)};
+return <><div className="card"><div className={'drop'+(drag?' on':'')} onDragOver={e=>{e.preventDefault();setD(true)}} onDragLeave={()=>setD(false)} onDrop={e=>{e.preventDefault();setD(false);load([...e.dataTransfer.files])}}><Upload/><p>Drag & drop multiple XLSX / XLS / CSV files (max 25 MB each)</p><input type="file" multiple accept=".xlsx,.xls,.csv" onChange={e=>{load([...e.target.files]);e.target.value=''}}/></div>
+{!files.length?<p className="empty">No files uploaded. Files are read in your browser and kept in memory for this session.</p>:<div className="tw"><table><thead><tr><th>Compare</th><th>File</th><th>Category</th><th>Sheet</th><th>Sheets</th><th>Rows</th><th>Cols</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead><tbody>{files.map(f=>{const R=rowsOf(f);return <tr key={f.id}><td><input type="checkbox" checked={sel.includes(f.id)} onChange={e=>sync(files,e.target.checked?[...sel,f.id]:sel.filter(x=>x!=f.id))}/>{sel[0]==f.id&&<span className="badge running">baseline</span>}</td><td>{f.name}</td>
+<td><select value={f.cat} onChange={e=>upd(f.id,{cat:e.target.value})}>{CATS.map(c=><option key={c}>{c}</option>)}</select></td><td><select value={f.sheet} onChange={e=>upd(f.id,{sheet:e.target.value})}>{Object.keys(f.sheets).map(s=><option key={s}>{s}</option>)}</select></td><td>{Object.keys(f.sheets).length}</td><td>{R.length}</td><td>{R[0]?Object.keys(R[0]).length:0}</td><td>{(f.size/1024).toFixed(1)} KB</td><td>{f.uploaded}</td>
+<td className="act"><button className="ic" title="Download original" onClick={()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f.file);a.download=f.name;a.click()}}><Download size={16}/></button><button className="ic" title="Remove" onClick={()=>sync(files.filter(x=>x.id!=f.id),sel.filter(x=>x!=f.id))}><X size={16}/></button></td></tr>})}</tbody></table></div>}</div>
+{picked.length<2?<div className="card"><p className="empty">Tick two or more files. The first ticked file is the baseline; every other ticked file is compared against it.</p></div>:<div className="card">
+<div className="row">{results.map((x,i)=><button key={x.name} className={'btn '+(i==tab?'':'ghost')} onClick={()=>setTab(i)}>vs {x.name}</button>)}<span className="grow"/>
+<label>Key column<select value={res.k} onChange={e=>setKey(e.target.value)}>{(r.common||[]).map(c=><option key={c}>{c}</option>)}{r.error&&<option>{res.k}</option>}</select></label></div>
+{r.error?<p className="er">{r.error}</p>:<>
+<div className="grid6">{Object.entries(r.counts).map(([a,b])=><div className="card stat" key={a}><small>{a}</small><h2>{b}</h2></div>)}</div>
+<p>{r.missing.length>0&&<>Missing columns (in baseline only): <b>{r.missing.join(', ')}</b>. </>}{r.extra.length>0&&<>Additional columns: <b>{r.extra.join(', ')}</b>. </>}{r.tdiff.length>0&&<>Data type differences: <b>{r.tdiff.join(', ')}</b>.</>}{!r.missing.length&&!r.extra.length&&!r.tdiff.length&&'Columns and data types match.'}</p>
+<div className="row"><div className="search"><input placeholder="Search differencesâ€¦" value={q} onChange={e=>setQ(e.target.value)}/></div><select value={flt} onChange={e=>setFlt(e.target.value)}><option value="">All differences</option>{TYPES.map(t=><option key={t}>{t}</option>)}</select></div>
+<div className="row"><b>Export:</b>{[['Full',''],...TYPES.map(t=>[t,t])].map(([l,t])=><span key={l}><button className="btn ghost" onClick={()=>exp('csv',t)}>{l} CSV</button> <button className="btn ghost" onClick={()=>exp('xlsx',t)}>XLSX</button></span>)}</div>
+<div className="tw"><table><thead><tr><th>Type</th><th>Key ({res.k})</th><th>Column</th><th>Old value</th><th>New value</th></tr></thead><tbody>{view.slice(0,300).map((x,i)=><tr key={i}><td><span className={'badge '+({Added:'completed',Deleted:'failed',Modified:'warning',Unchanged:'read',Duplicate:'medium'}[x.type])}>{x.type}</span></td><td>{x.key}</td><td>{x.column||''}</td><td className={x.type=='Modified'?'old':''}>{x.type=='Modified'?String(x.old):x.type=='Deleted'?'(record removed)':''}</td><td className={x.type=='Modified'?'new':''}>{x.type=='Modified'?String(x.new):x.type=='Added'?'(record added)':''}</td></tr>)}{!view.length&&<tr><td colSpan="5" className="empty">No differences match</td></tr>}</tbody></table></div>{view.length>300&&<small>Showing first 300 of {view.length}; exports include all.</small>}</>}</div>}</>}
+
